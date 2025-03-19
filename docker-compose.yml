@@ -1,0 +1,9 @@
+# Docker compose for list updater
+
+services:
+  laww:
+    container_name: laww
+    build: .
+    env_file:
+      - .env
+    restart: always
