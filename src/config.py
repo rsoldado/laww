@@ -79,9 +79,10 @@ class TargetConfig:
                 f")"
             )
 
-    def __init__(self, name: str, url: str, output, settings: dict = {}):
+    def __init__(self, name: str, url: str, output, settings: dict = {}, type: str = "web"):
         self.name = name
         self.url = url
+        self.type = type
         
         # Handle both single output (dict) and multiple outputs (list)
         if isinstance(output, dict):
@@ -107,6 +108,10 @@ class TargetConfig:
         if not self.name or not self.name.strip():
             raise ValueError("Target name cannot be empty")
         
+        # Validate type
+        if self.type not in ['web', 'zeronet']:
+            raise ValueError(f"Target type must be 'web' or 'zeronet', got: {self.type}")
+        
         # Validate URL
         if not self.url or not self.url.strip():
             raise ValueError("Target URL cannot be empty")
@@ -124,6 +129,7 @@ class TargetConfig:
             f"TargetConfig(\n"
             f"  name='{self.name}',\n"
             f"  url='{self.url}',\n"
+            f"  type='{self.type}',\n"
             f"  outputs=[\n    {outputs_str}\n  ],\n"
             f"  settings={repr(self.settings).replace(chr(10), chr(10) + '  ')}\n"
             f")"
@@ -158,7 +164,8 @@ def load_config(config_file: str):
             tc = TargetConfig(target['name'], 
                               target['url'], 
                               target['output'], 
-                              target['settings'])
+                              target.get('settings', {}),
+                              target.get('type', 'web'))
             configs.append(tc)
         except:
             logging.warning(f"Invalid target configuration: {target}")

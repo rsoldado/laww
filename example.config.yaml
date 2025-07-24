@@ -4,6 +4,7 @@
 targets:
   # Simple file monitoring - save to local disk
   - name: "weather_data"
+    type: "web"             # Optional: defaults to "web" if not specified
     url: "https://api.openweathermap.org/data/2.5/weather?q=London&appid=your_api_key"
     output:
       type: "file"
@@ -15,6 +16,7 @@ targets:
 
   # GitHub backup only
   - name: "api_status"
+    type: "web"
     url: "https://status.github.com/api/status.json"
     output:
       type: "github"
@@ -28,6 +30,7 @@ targets:
 
   # Multiple outputs - save locally AND upload to GitHub
   - name: "crypto_prices"
+    type: "web"
     url: "https://api.coindesk.com/v1/bpi/currentprice.json"
     output:
       - type: "file"
@@ -43,6 +46,7 @@ targets:
 
   # News feed monitoring with minimal settings (uses defaults)
   - name: "tech_news"
+    # type: "web" is default when not specified
     url: "https://feeds.feedburner.com/TechCrunch/startups"
     output:
       type: "file"
@@ -52,6 +56,7 @@ targets:
 
   # Stock market data with GitHub backup
   - name: "stock_data"
+    type: "web"
     url: "https://api.example.com/stocks/AAPL"
     output:
       type: "github"
@@ -65,6 +70,7 @@ targets:
 
   # Website monitoring with dual backup
   - name: "website_health"
+    type: "web"
     url: "https://your-website.com/api/health"
     output:
       - type: "file"
@@ -78,8 +84,21 @@ targets:
       retry_delay: 15        # Quick retry for monitoring
       timeout: 8             # Fast timeout for health checks
 
+  # ZeroNet example - monitoring ZeroNet sites
+  - name: "zeronet_site"
+    type: "zeronet"
+    url: "http://127.0.0.1:43110/1SiteAddress/content.json"
+    output:
+      type: "file"
+      path: "./downloads/zeronet/site-content.json"
+    settings:
+      interval: 600          # Check every 10 minutes
+      retry_delay: 120       # Wait 2 minutes before retry
+      timeout: 15            # 15 second timeout for ZeroNet
+
   # Configuration examples showing edge cases
   - name: "large_dataset"
+    type: "web"
     url: "https://data.example.com/export/daily.csv"
     output:
       type: "file"
@@ -91,6 +110,7 @@ targets:
 
   # Multiple GitHub repositories
   - name: "system_metrics"
+    type: "web"
     url: "https://monitoring.example.com/api/metrics"
     output:
       - type: "github"
@@ -114,6 +134,11 @@ targets:
 # - name: Unique identifier for the target
 # - url: HTTP/HTTPS URL to monitor
 # - output: Single output config or list of outputs
+#
+# OPTIONAL FIELDS:
+# - type: Target type - "web" (default) or "zeronet"
+#   * "web": Standard HTTP/HTTPS web requests
+#   * "zeronet": ZeroNet site monitoring (typically localhost:43110)
 #
 # OUTPUT TYPES:
 # 1. file: Save to local disk

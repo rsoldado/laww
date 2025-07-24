@@ -20,7 +20,7 @@ class FileMonitor:
         self.running = False
         
         # Initialize fetcher and output manager
-        self.fetcher = FileFetcher(self.config.url, self.config.settings)
+        self.fetcher = FileFetcher(self.config.url, self.config.settings, self.config.type)
         self.output = OutputManager(self.config.outputs)
         self.last_content = None  # Store last fetched content for comparison
 

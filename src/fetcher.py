@@ -18,16 +18,32 @@ class FileFetcher:
         'Upgrade-Insecure-Requests': '1'
     }
 
-    def __init__(self, url: str, settings: TargetConfig.TargetSettings):
+    def __init__(self, url: str, settings: TargetConfig.TargetSettings, target_type: str):
         self.url = url
         self.timeout = settings.timeout
+        self.target_type = target_type
+
+        # Assign correspondent fetch function
+        if target_type == "web":
+            self.fetch = self.fetch_web
+        elif target_type == "zeronet":
+            self.fetch = self.fetch_zeronet
+            # Also extract the main site address for ZeroNet
+            url_parts = self.url.split('/')
+            if len(url_parts) < 5:
+                raise ValueError(f"Invalid ZeroNet URL format: {self.url}")
+            base_url = '/'.join(url_parts[:4])  # http://127.0.0.1:43110
+            site_address = url_parts[4]
+            self.main_url = f"{base_url}/{site_address}/"
+        else:
+            raise ValueError(f"Unsupported target type: {target_type}")
 
         # Suppress logging from requests and urllib3
         logging.getLogger("requests").setLevel(logging.CRITICAL)
         logging.getLogger("urllib3").setLevel(logging.CRITICAL)
 
         
-    def fetch(self) -> Optional[Dict[str, Any]]:
+    def fetch_web(self) -> Optional[Dict[str, Any]]:
         try:
             response = requests.get(self.url, headers=self.headers, timeout=self.timeout)
             response.raise_for_status()  # Raise exception for HTTP error codes
@@ -50,6 +66,39 @@ class FileFetcher:
             
         except Exception as e:
             logging.debug(f"Unexpected error fetching {self.url}: {e}")
+            raise
+
+    def fetch_zeronet(self) -> Optional[Dict[str, Any]]:
+        try:
+            # First load the main site
+            main_response = requests.get(self.main_url, headers=self.headers, timeout=self.timeout)
+            main_response.raise_for_status()
+            # Then get the specific file
+            response = requests.get(self.url, headers=self.headers, timeout=self.timeout)
+            response.raise_for_status()
+            return {
+                'file': response.content,
+                'sha': self._get_sha(response.content)
+            }
+
+        except requests.exceptions.Timeout:
+            logging.debug(f"Timeout fetching ZeroNet URL {self.url}")
+            raise
+            
+        except requests.exceptions.ConnectionError:
+            logging.debug(f"Connection error fetching ZeroNet URL {self.url}")
+            raise
+            
+        except requests.exceptions.HTTPError as e:
+            logging.debug(f"HTTP error fetching ZeroNet URL {self.url}: {e}")
+            raise
+            
+        except ValueError as e:
+            logging.debug(f"Invalid ZeroNet URL {self.url}: {e}")
+            raise
+            
+        except Exception as e:
+            logging.debug(f"Unexpected error fetching ZeroNet URL {self.url}: {e}")
             raise
 
     def _get_sha(self, content: bytes) -> str:
