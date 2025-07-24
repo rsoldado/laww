@@ -1,9 +1,21 @@
-# Docker compose for list updater
-
+# LAWW Docker Compose
 services:
   laww:
     container_name: laww
-    build: .
-    env_file:
-      - .env
-    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data/downloads:/app/downloads # Downloaded files
+      - ./data/logs:/app/logs # Log files
+      - ./config.yaml:/app/config.yaml:ro # Target configuration file
+    ports:
+      - "43110:43110" # Zeronet proxy
+    restart: unless-stopped
+
+networks:
+  default:
+    name: laww-network

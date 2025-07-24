@@ -1,0 +1,87 @@
+# Git
+.git/
+.gitignore
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.env
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE files
+.vscode/
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# Unit test / coverage reports
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+.nox/
+nosetests.xml
+coverage.xml
+
+# Documentation
+docs/_build/
+*.md
+README.md
+
+# Configuration files (may contain secrets)
+config.yaml
+.env
+
+# Downloaded files and temporary data
+downloads/
+test-file.json
+*.tmp
+*.temp
+
+# Backup and old files
+*.bak
+*.backup
+old/
+
+# Development and build artifacts
+build/
+dist/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Docker files (don't need these inside the container)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Other development files
+requirements-dev.txt
+.pre-commit-config.yaml
+pytest.ini
+tox.ini
+setup.cfg

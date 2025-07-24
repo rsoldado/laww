@@ -1,50 +1,37 @@
 # LAWW
-Custom app that downloads, compares and uploads to a repository the most recent copy of a certain list (text document). Used to be deployed with Docker.
 
-## Table of Contents
-- [Preparation](#preparation)
-- [Deployment](#deployment)
+![Docker](https://img.shields.io/badge/docker-ready-blue?logo=docker)
 
----
+LAWW es una aplicación para monitorizar y gestionar descargas de ficheros de forma sencilla y automatizada. Está pensada para facilitar la descarga de listas de IPTV en Zeronet y crear copias de seguridad periódicas.
 
-## Preparation
+## ¿Cómo funciona?
+Mediante la configuración de `targets` es posible especificar qué archivos monitorizar. LAWW se encarga de descargar, comprobar y guardar según haya sido configurado, ofreciendo diferentes opciones de personalización.
 
-Follow these steps to set up the development environment for the project.
+## Características
+- Monitorización de varios archivos a la vez.
+- Compatible con Zeronet.
+- Subida de ficheros automática a repositorio en GitHub.
+- Listo para desplegar en Docker.
 
-### 1. Set the environment variables
-A file `.env` with the format specified in `.env.example` must be created with the parameters desired.
+## Despliegue
+1. **Clona este repositorio:**
+   ```bash
+   git clone https://github.com/rsoldado/laww.git
+   cd laww
+   ```
+2. **Configuración:**
+   - Crea los ficheros de configuración `config.yaml` y `.env` con las preferencias de configuración y archivos objetivos.
 
-```
-LIST_URL=<list_url>
-GITHUB_USER=<github_user>
-GITHUB_REPO=<github_repo>
-GITHUB_FILE=<github_file>
-GITHUB_TOKEN=<github_token>
-```
+3. **Arranca el servicio:**
+   ```bash
+   docker-compose up -d --build
+   ```
 
-### 2. Set Up a Python Virtual Environment
-```bash
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
+## Configuración
+- El archivo `config.yaml` controla el comportamiento de la aplicación y es necesario para el despliegue. El fichero `example.config.yaml` contiene ejemplos de configuración sobre los ficheros objetivos.
+- Para algunos casos, puedes necesitar crear un fichero `.env` con variables de entorno opcionales. El fichero `example.env` contiene ejemplos de variables de entorno opcionales.
 
+## Información adicional
+- Los archivos descargados se guardan en `data/downloads` y los logs en `data/logs`.
+- Puedes modificar los puertos y rutas en `docker-compose.yml` si lo necesitas, por defecto se expone el puerto de Zeronet para crear un proxy.
 
-## Deployment
-To build and run the container, execute:
-
-To deploy the project using Docker Compose, follow these steps:
-```bash
-docker-compose up --build -d
-```
-
-To stop the container, run:
-```bash
-docker-compose down
-```
-
-## Next steps
-- Adaptative algorithm
-- Set date on list
-- Graphic statistics
-- Implement Zeronet

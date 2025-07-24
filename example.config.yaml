@@ -1,0 +1,140 @@
+# LAWW Configuration File
+# This file defines the targets to monitor and their associated actions
+
+targets:
+  # Simple file monitoring - save to local disk
+  - name: "weather_data"
+    url: "https://api.openweathermap.org/data/2.5/weather?q=London&appid=your_api_key"
+    output:
+      type: "file"
+      path: "./downloads/weather.json"
+    settings:
+      interval: 300          # Check every 5 minutes (in seconds)
+      retry_delay: 60        # Delay between retries (in seconds) 
+      timeout: 10            # Timeout for requests (in seconds)
+
+  # GitHub backup only
+  - name: "api_status"
+    url: "https://status.github.com/api/status.json"
+    output:
+      type: "github"
+      repository: "your-username/monitoring-data"
+      path: "status/github-status.json"
+      token_env: "GITHUB_TOKEN"  # Environment variable containing GitHub token
+    settings:
+      interval: 180          # Check every 3 minutes
+      retry_delay: 30        # Retry after 30 seconds on failure
+      timeout: 15            # 15 second timeout
+
+  # Multiple outputs - save locally AND upload to GitHub
+  - name: "crypto_prices"
+    url: "https://api.coindesk.com/v1/bpi/currentprice.json"
+    output:
+      - type: "file"
+        path: "./downloads/crypto/bitcoin-price.json"
+      - type: "github"
+        repository: "your-username/crypto-data"
+        path: "prices/bitcoin.json"
+        token_env: "GITHUB_TOKEN"
+    settings:
+      interval: 120          # Check every 2 minutes
+      retry_delay: 45        # Wait 45 seconds before retry
+      timeout: 20            # 20 second timeout
+
+  # News feed monitoring with minimal settings (uses defaults)
+  - name: "tech_news"
+    url: "https://feeds.feedburner.com/TechCrunch/startups"
+    output:
+      type: "file"
+      path: "./downloads/news/techcrunch.xml"
+    settings:
+      interval: 900          # Check every 15 minutes
+
+  # Stock market data with GitHub backup
+  - name: "stock_data"
+    url: "https://api.example.com/stocks/AAPL"
+    output:
+      type: "github"
+      repository: "your-username/financial-data"
+      path: "stocks/apple.json"
+      token_env: "GITHUB_TOKEN"
+    settings:
+      interval: 60           # Check every minute during market hours
+      retry_delay: 10        # Quick retry for financial data
+      timeout: 5             # Fast timeout for real-time data
+
+  # Website monitoring with dual backup
+  - name: "website_health"
+    url: "https://your-website.com/api/health"
+    output:
+      - type: "file"
+        path: "./downloads/monitoring/health-check.json"
+      - type: "github"
+        repository: "your-username/website-monitoring"
+        path: "health/status.json"
+        token_env: "GITHUB_TOKEN"
+    settings:
+      interval: 30           # Check every 30 seconds
+      retry_delay: 15        # Quick retry for monitoring
+      timeout: 8             # Fast timeout for health checks
+
+  # Configuration examples showing edge cases
+  - name: "large_dataset"
+    url: "https://data.example.com/export/daily.csv"
+    output:
+      type: "file"
+      path: "./downloads/datasets/daily-export.csv"
+    settings:
+      interval: 3600         # Check hourly
+      retry_delay: 120       # Wait 2 minutes before retry
+      timeout: 60            # 1 minute timeout for large files
+
+  # Multiple GitHub repositories
+  - name: "system_metrics"
+    url: "https://monitoring.example.com/api/metrics"
+    output:
+      - type: "github"
+        repository: "team/production-metrics"
+        path: "daily/metrics.json"
+        token_env: "GITHUB_TOKEN"
+      - type: "github"
+        repository: "team/backup-data"
+        path: "metrics/system.json"
+        token_env: "GITHUB_TOKEN"
+      - type: "file"
+        path: "./downloads/metrics/system-metrics.json"
+    settings:
+      interval: 600          # Check every 10 minutes
+      retry_delay: 90        # Wait 90 seconds before retry
+      timeout: 25            # 25 second timeout
+
+# Configuration Guidelines:
+#
+# REQUIRED FIELDS:
+# - name: Unique identifier for the target
+# - url: HTTP/HTTPS URL to monitor
+# - output: Single output config or list of outputs
+#
+# OUTPUT TYPES:
+# 1. file: Save to local disk
+#    - path: File path (directories created automatically)
+#
+# 2. github: Upload to GitHub repository
+#    - repository: "username/repo-name" format
+#    - path: File path in repository
+#    - token_env: Environment variable with GitHub token
+#
+# SETTINGS (all optional with defaults):
+# - interval: Check frequency in seconds (default: 300)
+# - retry_delay: Wait time between retries in seconds (default: 60)
+# - timeout: Request timeout in seconds (default: 10)
+#
+# ENVIRONMENT VARIABLES:
+# Set GITHUB_TOKEN in your environment or .env file:
+# export GITHUB_TOKEN=your_github_personal_access_token
+#
+# EXAMPLES OF VALID URLs:
+# - REST APIs: https://api.example.com/data.json
+# - RSS/XML feeds: https://example.com/feed.xml
+# - CSV exports: https://data.example.com/export.csv
+# - Any HTTP/HTTPS endpoint returning content
