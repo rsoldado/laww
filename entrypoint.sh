@@ -26,4 +26,4 @@ sleep 10
 # Start the app
 echo "Starting LAWW..."
 cd /app
-python laww.py -v 2>&1 | tee -a "$LOG_DIR/laww.log"
+python laww.py 2>&1 | tee -a "$LOG_DIR/laww.log"
